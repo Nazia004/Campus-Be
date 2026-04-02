@@ -5,8 +5,12 @@ const mongoose = require('mongoose');
 
 const app = express();
 
+const allowedOrigins = [
+  /^http:\/\/localhost:\d+$/,
+  'https://campuszone.co.in',
+];
 app.use(cors({
-  origin: (origin, cb) => (!origin || /^http:\/\/localhost:\d+$/.test(origin) ? cb(null, true) : cb(new Error('CORS'))),
+  origin: (origin, cb) => (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin)) ? cb(null, true) : cb(new Error('CORS'))),
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -21,6 +25,7 @@ app.use('/api/placement', require('./routes/placement'));
 app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
+app.get('/', (req, res) => res.send('Campus Hub API is running'));
 
 async function seedAdmin() {
   const User = require('./models/User');
