@@ -21,7 +21,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/club', require('./routes/club'));
 app.use('/api/student', require('./routes/student'));
 app.use('/api/placement', require('./routes/placement'));
-
+app.use('/api/upload', require('./routes/upload'));
 app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: 'Internal server error' });
 });
