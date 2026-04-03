@@ -5,10 +5,28 @@ const { protect, requireRole } = require('../middleware/auth');
 
 const adminOnly = [protect, requireRole('admin')];
 
-// GET all students
+// GET all students (Paginated)
 router.get('/students', adminOnly, async (req, res) => {
-  const students = await User.find({ role: 'student' }).select('-__v');
-  res.json({ success: true, data: students });
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 50;
+  const skip = (page - 1) * limit;
+
+  try {
+    const total = await User.countDocuments({ role: 'student' });
+    const students = await User.find({ role: 'student' })
+      .select('-__v')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json({ 
+      success: true, 
+      data: students,
+      pagination: { total, page, limit, pages: Math.ceil(total / limit) }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // POST add student
