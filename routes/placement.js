@@ -147,4 +147,16 @@ router.delete('/:id/withdraw', studentOnly, async (req, res) => {
   }
 });
 
+// GET all applications for a specific user
+router.get('/user/:userId', authOnly, async (req, res) => {
+  try {
+    const applications = await Application.find({ user: req.params.userId })
+      .populate('placement')
+      .sort({ createdAt: -1 });
+    res.json({ success: true, data: applications });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
