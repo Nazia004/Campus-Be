@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const router = require('express').Router();
 const Club = require('../models/Club');
 const Event = require('../models/Event');
@@ -11,12 +12,26 @@ const studentOnly = [protect, requireRole('student')];
 // GET all clubs with join status
 router.get('/clubs', studentOnly, async (req, res) => {
   try {
-    const clubs = await Club.find().populate('createdBy', 'name').sort({ createdAt: -1 });
-    const data = clubs.map((c) => ({
-      ...c.toObject(),
-      memberCount: c.members.length,
-      isJoined: c.members.map(String).includes(String(req.user._id)),
-    }));
+    const data = await Club.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'creator'
+        }
+      },
+      { $unwind: { path: '$creator', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          memberCount: { $size: { $ifNull: ['$members', []] } },
+          isJoined: { $in: [req.user._id, { $ifNull: ['$members', []] }] },
+          createdBy: { _id: '$creator._id', name: '$creator.name' }
+        }
+      },
+      { $project: { members: 0, creator: 0 } },
+      { $sort: { createdAt: -1 } }
+    ]);
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -66,12 +81,36 @@ router.get('/my-clubs', studentOnly, async (req, res) => {
 // GET all events with registration status
 router.get('/events', studentOnly, async (req, res) => {
   try {
-    const events = await Event.find().populate('club', 'name').populate('createdBy', 'name').sort({ date: 1 });
-    const data = events.map((e) => ({
-      ...e.toObject(),
-      registrationCount: e.registrations.length,
-      isRegistered: e.registrations.map(String).includes(String(req.user._id)),
-    }));
+    const data = await Event.aggregate([
+      {
+        $lookup: {
+          from: 'clubs',
+          localField: 'club',
+          foreignField: '_id',
+          as: 'clubInfo'
+        }
+      },
+      { $unwind: { path: '$clubInfo', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'creator'
+        }
+      },
+      { $unwind: { path: '$creator', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          registrationCount: { $size: { $ifNull: ['$registrations', []] } },
+          isRegistered: { $in: [req.user._id, { $ifNull: ['$registrations', []] }] },
+          club: { _id: '$clubInfo._id', name: '$clubInfo.name' },
+          createdBy: { _id: '$creator._id', name: '$creator.name' }
+        }
+      },
+      { $project: { registrations: 0, clubInfo: 0, creator: 0 } },
+      { $sort: { date: 1 } }
+    ]);
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

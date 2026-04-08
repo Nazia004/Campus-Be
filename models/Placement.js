@@ -5,6 +5,7 @@ const placementSchema = new mongoose.Schema({
     type: String,
     enum: ['internship', 'job', 'campus_drive', 'workshop', 'conference'],
     required: true,
+    index: true,
   },
   title: { type: String, required: true, trim: true },
   company: { type: String, trim: true },
@@ -16,7 +17,7 @@ const placementSchema = new mongoose.Schema({
   salary: { type: String, trim: true },         // for job
   eligibility: { type: String, trim: true },
   applyLink: { type: String, trim: true },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Placement', placementSchema);

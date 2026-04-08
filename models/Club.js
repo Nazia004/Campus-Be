@@ -5,7 +5,7 @@ const clubSchema = new mongoose.Schema({
   description: { type: String, trim: true },
   category: { type: String, trim: true },
   venue: { type: String, trim: true },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });
 

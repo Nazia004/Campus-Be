@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const router = require('express').Router();
 const Placement = require('../models/Placement');
 const Application = require('../models/Application');
@@ -82,25 +83,43 @@ router.get('/manage/:id/applicants', placementOnly, async (req, res) => {
 router.get('/', authOnly, async (req, res) => {
   try {
     const { type } = req.query;
-    const filter = {};
-    if (type) filter.type = type;
-    const data = await Placement.find(filter)
-      .populate('createdBy', 'name')
-      .sort({ createdAt: -1 });
-      
-    // Fetch applications for all these placements to compute counts and hasApplied
-    const placementIds = data.map(d => d._id);
-    const applications = await Application.find({ placement: { $in: placementIds } });
-    
-    const result = data.map((d) => {
-      const pApps = applications.filter(a => String(a.placement) === String(d._id));
-      return {
-        ...d.toObject(),
-        applicantCount: pApps.length,
-        hasApplied: pApps.some(a => String(a.user) === String(req.user._id))
-      };
-    });
-    res.json({ success: true, data: result });
+    const match = {};
+    if (type) match.type = type;
+
+    const pipeline = [
+      { $match: match },
+      {
+        $lookup: {
+          from: 'applications',
+          localField: '_id',
+          foreignField: 'placement',
+          as: 'applications'
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'createdBy',
+          foreignField: '_id',
+          as: 'creator'
+        }
+      },
+      { $unwind: { path: '$creator', preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          applicantCount: { $size: '$applications' },
+          hasApplied: {
+            $in: [req.user._id, '$applications.user']
+          },
+          createdBy: { _id: '$creator._id', name: '$creator.name' }
+        }
+      },
+      { $project: { applications: 0, creator: 0 } },
+      { $sort: { createdAt: -1 } }
+    ];
+
+    const data = await Placement.aggregate(pipeline);
+    res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
