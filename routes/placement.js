@@ -4,6 +4,7 @@ const Placement = require('../models/Placement');
 const Application = require('../models/Application');
 const { protect, requireRole } = require('../middleware/auth');
 const { createNotification } = require('../utils/notify');
+const cache = require('../utils/cache');
 
 const placementOnly = [protect, requireRole('placement')];
 const studentOnly = [protect, requireRole('student')];
@@ -83,6 +84,10 @@ router.get('/manage/:id/applicants', placementOnly, async (req, res) => {
 router.get('/', authOnly, async (req, res) => {
   try {
     const { type } = req.query;
+    const cacheKey = `placement_${type || 'all'}_${req.user._id}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json({ success: true, data: cached });
+
     const match = {};
     if (type) match.type = type;
 
@@ -119,6 +124,7 @@ router.get('/', authOnly, async (req, res) => {
     ];
 
     const data = await Placement.aggregate(pipeline);
+    cache.set(cacheKey, data, 45000); // 45s cache
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -140,6 +146,11 @@ router.post('/:id/apply', studentOnly, async (req, res) => {
       fullName, email, phone, branch, year, cgpa, skills, coverLetter,
       resumeUrl
     });
+
+    // Invalidate caches
+    cache.delete(`placement_internship_${req.user._id}`);
+    cache.delete(`placement_all_${req.user._id}`);
+    cache.delete(`placement_job_${req.user._id}`);
     
     createNotification({
       title: 'Application Update',
@@ -159,6 +170,11 @@ router.delete('/:id/withdraw', studentOnly, async (req, res) => {
     if (!item) return res.status(404).json({ success: false, message: 'Not found' });
     
     await Application.findOneAndDelete({ placement: req.params.id, user: req.user._id });
+
+    // Invalidate caches
+    cache.delete(`placement_internship_${req.user._id}`);
+    cache.delete(`placement_all_${req.user._id}`);
+    cache.delete(`placement_job_${req.user._id}`);
     
     res.json({ success: true, message: 'Withdrawn' });
   } catch (err) {

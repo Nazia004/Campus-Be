@@ -1,9 +1,5 @@
-const mongoose = require('mongoose');
-const router = require('express').Router();
-const Club = require('../models/Club');
-const Event = require('../models/Event');
-const Notification = require('../models/Notification');
 const { protect, requireRole } = require('../middleware/auth');
+const cache = require('../utils/cache');
 
 const studentOnly = [protect, requireRole('student')];
 
@@ -12,6 +8,10 @@ const studentOnly = [protect, requireRole('student')];
 // GET all clubs with join status
 router.get('/clubs', studentOnly, async (req, res) => {
   try {
+    const cacheKey = `student_clubs_${req.user._id}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json({ success: true, data: cached });
+
     const data = await Club.aggregate([
       {
         $lookup: {
@@ -32,6 +32,7 @@ router.get('/clubs', studentOnly, async (req, res) => {
       { $project: { members: 0, creator: 0 } },
       { $sort: { createdAt: -1 } }
     ]);
+    cache.set(cacheKey, data, 30000); // 30s cache
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -47,6 +48,7 @@ router.post('/clubs/:id/join', studentOnly, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Already a member' });
     club.members.push(req.user._id);
     await club.save();
+    cache.delete(`student_clubs_${req.user._id}`);
     res.json({ success: true, message: 'Joined club successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -60,6 +62,7 @@ router.delete('/clubs/:id/leave', studentOnly, async (req, res) => {
     if (!club) return res.status(404).json({ success: false, message: 'Club not found' });
     club.members = club.members.filter((m) => String(m) !== String(req.user._id));
     await club.save();
+    cache.delete(`student_clubs_${req.user._id}`);
     res.json({ success: true, message: 'Left club successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -81,6 +84,10 @@ router.get('/my-clubs', studentOnly, async (req, res) => {
 // GET all events with registration status
 router.get('/events', studentOnly, async (req, res) => {
   try {
+    const cacheKey = `student_events_${req.user._id}`;
+    const cached = cache.get(cacheKey);
+    if (cached) return res.json({ success: true, data: cached });
+
     const data = await Event.aggregate([
       {
         $lookup: {
@@ -111,6 +118,7 @@ router.get('/events', studentOnly, async (req, res) => {
       { $project: { registrations: 0, clubInfo: 0, creator: 0 } },
       { $sort: { date: 1 } }
     ]);
+    cache.set(cacheKey, data, 30000); // 30s cache
     res.json({ success: true, data });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -126,6 +134,7 @@ router.post('/events/:id/register', studentOnly, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Already registered' });
     event.registrations.push(req.user._id);
     await event.save();
+    cache.delete(`student_events_${req.user._id}`);
     res.json({ success: true, message: 'Registered successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -139,6 +148,7 @@ router.delete('/events/:id/unregister', studentOnly, async (req, res) => {
     if (!event) return res.status(404).json({ success: false, message: 'Event not found' });
     event.registrations = event.registrations.filter((r) => String(r) !== String(req.user._id));
     await event.save();
+    cache.delete(`student_events_${req.user._id}`);
     res.json({ success: true, message: 'Unregistered successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

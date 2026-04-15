@@ -9,4 +9,7 @@ const clubSchema = new mongoose.Schema({
   members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });
 
+clubSchema.index({ createdBy: 1, createdAt: -1 });
+clubSchema.index({ members: 1 });
+
 module.exports = mongoose.model('Club', clubSchema);

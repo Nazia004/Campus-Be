@@ -12,4 +12,7 @@ const eventSchema = new mongoose.Schema({
   image: { type: String, trim: true },
 }, { timestamps: true });
 
+eventSchema.index({ club: 1, date: 1 });
+eventSchema.index({ registrations: 1 });
+
 module.exports = mongoose.model('Event', eventSchema);
