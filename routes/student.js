@@ -1,4 +1,8 @@
+const mongoose = require('mongoose');
 const router = require('express').Router();
+const Club = require('../models/Club');
+const Event = require('../models/Event');
+const Notification = require('../models/Notification');
 const { protect, requireRole } = require('../middleware/auth');
 const cache = require('../utils/cache');
 
