@@ -25,7 +25,7 @@ const IMAGES = {
     'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800',
     'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
     'https://images.unsplash.com/photo-1543351611-58f69d7c1781?w=800',
-    'https://images.unsplash.com/photo-1526676037777-05a232554f77?w=800',
+    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800',
   ],
   seminar: [
     'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
