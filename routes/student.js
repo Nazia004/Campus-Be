@@ -1,3 +1,4 @@
+const router = require('express').Router();
 const { protect, requireRole } = require('../middleware/auth');
 const cache = require('../utils/cache');
 
