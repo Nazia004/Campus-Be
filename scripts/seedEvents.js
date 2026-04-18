@@ -60,7 +60,7 @@ const EVENT_TEMPLATES = [
     description: 'Deep dive into data analysis and visualization tools.', 
     venue: 'Auditorium B', 
     time: '11:30 AM',
-    image: 'https://images.unsplash.com/photo-1551288049-bbda38a594a0?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Cyber Security Club', 
@@ -110,7 +110,7 @@ const EVENT_TEMPLATES = [
     description: 'Live performances by student bands and solo artists.', 
     venue: 'Open Air Theatre', 
     time: '5:00 PM',
-    image: 'https://images.unsplash.com/photo-1459746244111-7504bf5292ceea?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1501612780327-45045538702b?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Music/Band Club', 
@@ -134,7 +134,7 @@ const EVENT_TEMPLATES = [
     description: 'Submit your best campus shots and win prizes.', 
     venue: 'Art Gallery', 
     time: '9:00 AM',
-    image: 'https://images.unsplash.com/photo-1502982722880-0e86cb68249a?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Art Club', 
@@ -142,7 +142,7 @@ const EVENT_TEMPLATES = [
     description: 'Learn Figma and design principles for modern interfaces.', 
     venue: 'Design Studio', 
     time: '11:00 AM',
-    image: 'https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Atithya Club', 
@@ -176,7 +176,7 @@ const EVENT_TEMPLATES = [
     description: 'Parliamentary-style debate on current affairs.', 
     venue: 'Seminar Room B', 
     time: '3:00 PM',
-    image: 'https://images.unsplash.com/photo-1541872703-74c5e443d1fe?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=400&fit=crop'
   },
 
   // Sports Teams
@@ -194,7 +194,7 @@ const EVENT_TEMPLATES = [
     description: 'Singles and doubles badminton tournament for students.', 
     venue: 'Indoor Stadium', 
     time: '8:30 AM',
-    image: 'https://images.unsplash.com/photo-1613918431703-aa49219ea2a1?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Football Club', 
@@ -202,7 +202,7 @@ const EVENT_TEMPLATES = [
     description: 'Cheer for your department in the grand football league.', 
     venue: 'Main Ground', 
     time: '4:00 PM',
-    image: 'https://images.unsplash.com/photo-1510567198184-8124bb82ded9?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Volleyball Club', 
@@ -210,7 +210,7 @@ const EVENT_TEMPLATES = [
     description: 'Open practice and selection rounds for the university team.', 
     venue: 'Volleyball Court', 
     time: '5:00 PM',
-    image: 'https://images.unsplash.com/photo-1592656094267-764a451195b5?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Cricket Club', 
@@ -242,7 +242,7 @@ const EVENT_TEMPLATES = [
     description: 'A 5km run across the campus to promote health and fitness.', 
     venue: 'Main Gate', 
     time: '6:00 AM',
-    image: 'https://images.unsplash.com/photo-1452626012836-439f6888651b?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1533560904424-a0c61dc306fc?w=800&h=400&fit=crop'
   },
 
   // Social & Environmental
@@ -268,7 +268,7 @@ const EVENT_TEMPLATES = [
     description: 'Annual blood donation drive in collaboration with City Hospital.', 
     venue: 'Student Center', 
     time: '9:30 AM',
-    image: 'https://images.unsplash.com/photo-1615461066841-6116ecaabb04?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1615461066159-fea0960485d5?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'Net Zero Club', 
@@ -276,7 +276,7 @@ const EVENT_TEMPLATES = [
     description: 'Guest lecture on reducing carbon footprint in daily life.', 
     venue: 'Auditorium C', 
     time: '2:00 PM',
-    image: 'https://images.unsplash.com/photo-1518173946687-a4c8a9b749f5?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&h=400&fit=crop'
   },
 
   // General/Placement related
@@ -294,7 +294,7 @@ const EVENT_TEMPLATES = [
     description: 'Tips and tricks to craft an industry-ready resume.', 
     venue: 'Placement Cell', 
     time: '2:30 PM',
-    image: 'https://images.unsplash.com/photo-1507679799987-c7377ec486b8?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=400&fit=crop'
   },
   { 
     clubRef: 'General', 
@@ -302,7 +302,7 @@ const EVENT_TEMPLATES = [
     description: 'Practice technical and HR interviews with industry mentors.', 
     venue: 'Placement Cell', 
     time: '9:00 AM',
-    image: 'https://images.unsplash.com/photo-1521791136064-7986c2923216?w=800&h=400&fit=crop'
+    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=400&fit=crop'
   },
 ];
 
