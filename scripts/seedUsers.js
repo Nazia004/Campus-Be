@@ -32,6 +32,12 @@ const users = [
     email: 'placement@campuszone.co.in',
     password: 'Placement@2025',
     role: 'placement'
+  },
+  {
+    name: 'Sample Faculty',
+    email: 'faculty@campuszone.co.in',
+    password: 'Faculty@2025',
+    role: 'faculty'
   }
 ];
 
