@@ -1,105 +1,310 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const Event = require('../models/Event');
+const Club = require('../models/Club');
+const User = require('../models/User');
 
-// ── Dummy IDs ────────────────────────────────────────────────────────────────
-const CLUB_IDS = [
-  '665f1a2b3c4d5e6f7a8b9c01',
-  '665f1a2b3c4d5e6f7a8b9c02',
-  '665f1a2b3c4d5e6f7a8b9c03',
-  '665f1a2b3c4d5e6f7a8b9c04',
-  '665f1a2b3c4d5e6f7a8b9c05',
-].map((id) => new mongoose.Types.ObjectId(id));
+const EVENT_TEMPLATES = [
+  // Tech Clubs
+  { 
+    clubRef: 'Coding Club', 
+    title: 'National Hackathon 2025', 
+    description: 'A 24-hour coding hackathon open to all students.', 
+    venue: 'Innovation Lab', 
+    time: '9:00 AM',
+    image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Google Developer Groups', 
+    title: 'Web Dev Workshop', 
+    description: 'Hands-on workshop covering React and Node.js basics.', 
+    venue: 'CS Seminar Hall', 
+    time: '10:00 AM',
+    image: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Cyber Security Club', 
+    title: 'Cybersecurity Bootcamp', 
+    description: 'Learn ethical hacking and network security fundamentals.', 
+    venue: 'Lab Block 2', 
+    time: '9:30 AM',
+    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Coding Club', 
+    title: 'Coding Contest — Round 1', 
+    description: 'Competitive programming contest with cash prizes.', 
+    venue: 'Computer Lab 3', 
+    time: '2:00 PM',
+    image: 'https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Google Developer Groups', 
+    title: 'Flutter App Dev Workshop', 
+    description: 'Build your first cross-platform mobile app with Flutter.', 
+    venue: 'CS Lab 1', 
+    time: '10:00 AM',
+    image: 'https://images.unsplash.com/photo-1522252234503-e356532cafd5?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Google Developer Groups', 
+    title: 'Cloud Computing Workshop', 
+    description: 'Introduction to AWS and Azure for beginners.', 
+    venue: 'CS Seminar Hall', 
+    time: '10:30 AM',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Coding Club', 
+    title: 'Data Science Seminar', 
+    description: 'Deep dive into data analysis and visualization tools.', 
+    venue: 'Auditorium B', 
+    time: '11:30 AM',
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Cyber Security Club', 
+    title: 'Blockchain Workshop', 
+    description: 'Introduction to blockchain technology and smart contracts.', 
+    venue: 'CS Seminar Hall', 
+    time: '11:00 AM',
+    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Sir C.V. Raman Science Club', 
+    title: 'Science Exhibition', 
+    description: 'Students showcase innovative science projects and models.', 
+    venue: 'Exhibition Hall', 
+    time: '10:00 AM',
+    image: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Sir C.V. Raman Science Club', 
+    title: 'Robotics Challenge', 
+    description: 'Build and race autonomous robots in a timed challenge.', 
+    venue: 'Robotics Lab', 
+    time: '10:00 AM',
+    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Coding Club', 
+    title: 'Linux & Open Source Day', 
+    description: 'Explore the world of open-source software and Linux.', 
+    venue: 'Lab Block 1', 
+    time: '10:00 AM',
+    image: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&h=400&fit=crop'
+  },
 
-const CREATED_BY = new mongoose.Types.ObjectId('665f1a2b3c4d5e6f7a8b9c00');
+  // Cultural Clubs
+  { 
+    clubRef: 'Anubhuti Dramatic Club', 
+    title: 'Drama & Theatre Fest', 
+    description: 'Annual theatre festival featuring original student plays.', 
+    venue: 'Main Auditorium', 
+    time: '5:30 PM',
+    image: 'https://images.unsplash.com/photo-1513106580091-1d82408b8cd6?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Music/Band Club', 
+    title: 'Annual Music Fest', 
+    description: 'Live performances by student bands and solo artists.', 
+    venue: 'Open Air Theatre', 
+    time: '5:00 PM',
+    image: 'https://images.unsplash.com/photo-1501612780327-45045538702b?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Music/Band Club', 
+    title: 'Open Mic Night', 
+    description: 'Share your poetry, comedy, or music with the campus.', 
+    venue: 'Student Lounge', 
+    time: '7:00 PM',
+    image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Anubhuti Dramatic Club', 
+    title: 'Cultural Night', 
+    description: 'A celebration of diverse cultures through dance and music.', 
+    venue: 'Main Auditorium', 
+    time: '6:00 PM',
+    image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Art Club', 
+    title: 'Photography Contest', 
+    description: 'Submit your best campus shots and win prizes.', 
+    venue: 'Art Gallery', 
+    time: '9:00 AM',
+    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Art Club', 
+    title: 'UI/UX Design Workshop', 
+    description: 'Learn Figma and design principles for modern interfaces.', 
+    venue: 'Design Studio', 
+    time: '11:00 AM',
+    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Atithya Club', 
+    title: 'Inter-Dept Quiz Competition', 
+    description: 'General knowledge and technical quiz for all departments.', 
+    venue: 'Seminar Hall C', 
+    time: '3:30 PM',
+    image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=400&fit=crop'
+  },
 
-// ── Image pools (category-based, no repeats within a pool) ─────────────────
-const IMAGES = {
-  tech: [
-    'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
-    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
-    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800',
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800',
-  ],
-  music: [
-    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-    'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800',
-    'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800',
-    'https://images.unsplash.com/photo-1501612780327-45045538702b?w=800',
-    'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800',
-  ],
-  sports: [
-    'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800',
-    'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800',
-    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
-    'https://images.unsplash.com/photo-1543351611-58f69d7c1781?w=800',
-    'https://images.unsplash.com/photo-1526676037777-05a232554f77?w=800',
-  ],
-  seminar: [
-    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
-    'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800',
-    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800',
-    'https://images.unsplash.com/photo-1560439514-4e9645039924?w=800',
-    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800',
-  ],
-};
+  // Academic & Marketing
+  { 
+    clubRef: 'Marketing Club', 
+    title: 'Entrepreneurship Summit', 
+    description: 'Panel discussion with successful alumni entrepreneurs.', 
+    venue: 'Conference Hall', 
+    time: '12:00 PM',
+    image: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Marketing Club', 
+    title: 'Startup Pitch Day', 
+    description: 'Students pitch their startup ideas to a panel of judges.', 
+    venue: 'Conference Hall', 
+    time: '1:00 PM',
+    image: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Marketing Club', 
+    title: 'Debate Competition', 
+    description: 'Parliamentary-style debate on current affairs.', 
+    venue: 'Seminar Room B', 
+    time: '3:00 PM',
+    image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=400&fit=crop'
+  },
 
-// Tracks last used index per category to avoid consecutive repeats
-const lastUsed = { tech: -1, music: -1, sports: -1, seminar: -1 };
+  // Sports Teams
+  { 
+    clubRef: 'Basketball Club', 
+    title: 'Inter-College Basketball Tournament', 
+    description: 'Sports tournament featuring visiting college teams.', 
+    venue: 'Sports Complex', 
+    time: '8:00 AM',
+    image: 'https://images.unsplash.com/photo-1519861531473-9200262188bf?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Badminton Club', 
+    title: 'Badminton Championship', 
+    description: 'Singles and doubles badminton tournament for students.', 
+    venue: 'Indoor Stadium', 
+    time: '8:30 AM',
+    image: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Football Club', 
+    title: 'Football Inter-Department League', 
+    description: 'Cheer for your department in the grand football league.', 
+    venue: 'Main Ground', 
+    time: '4:00 PM',
+    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Volleyball Club', 
+    title: 'Volleyball Practice Match', 
+    description: 'Open practice and selection rounds for the university team.', 
+    venue: 'Volleyball Court', 
+    time: '5:00 PM',
+    image: 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Cricket Club', 
+    title: 'Cricket T20 Campus Cup', 
+    description: 'Annual cricket tournament with students and faculty.', 
+    venue: 'Cricket Stadium', 
+    time: '9:00 AM',
+    image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Athletics Club', 
+    title: 'Annual Track & Field Sports Day', 
+    description: 'Track and field events, relay races, and marathons.', 
+    venue: 'Sports Complex', 
+    time: '6:30 AM',
+    image: 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Table Tennis Club', 
+    title: 'Table Tennis Singles Championship', 
+    description: 'Knockout table tennis tournament with cash rewards.', 
+    venue: 'Indoor Sports Room', 
+    time: '10:00 AM',
+    image: 'https://images.unsplash.com/photo-1534158914592-062992fbe900?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Athletics Club', 
+    title: 'Campus Marathon', 
+    description: 'A 5km run across the campus to promote health and fitness.', 
+    venue: 'Main Gate', 
+    time: '6:00 AM',
+    image: 'https://images.unsplash.com/photo-1533560904424-a0c61dc306fc?w=800&h=400&fit=crop'
+  },
 
-function pickImage(category) {
-  const pool = IMAGES[category];
-  let idx;
-  do { idx = Math.floor(Math.random() * pool.length); } while (idx === lastUsed[category] && pool.length > 1);
-  lastUsed[category] = idx;
-  return pool[idx];
-}
+  // Social & Environmental
+  { 
+    clubRef: 'NSS', 
+    title: 'Environment Awareness Walk', 
+    description: 'Campus walk to promote sustainability and green practices.', 
+    venue: 'Campus Ground', 
+    time: '7:00 AM',
+    image: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Net Zero Club', 
+    title: 'Tree Plantation Drive', 
+    description: 'Join us to plant 100+ saplings around the university campus.', 
+    venue: 'North Campus', 
+    time: '8:00 AM',
+    image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'NSS', 
+    title: 'Blood Donation Camp', 
+    description: 'Annual blood donation drive in collaboration with City Hospital.', 
+    venue: 'Student Center', 
+    time: '9:30 AM',
+    image: 'https://images.unsplash.com/photo-1615461066159-fea0960485d5?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'Net Zero Club', 
+    title: 'Sustainability Workshop', 
+    description: 'Guest lecture on reducing carbon footprint in daily life.', 
+    venue: 'Auditorium C', 
+    time: '2:00 PM',
+    image: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=800&h=400&fit=crop'
+  },
 
-function detectCategory(title) {
-  const t = title.toLowerCase();
-  if (/hackathon|coding|code|tech|web|app|cloud|cyber|blockchain|linux|robot|flutter|data|ai|ml|ui|ux|science/.test(t)) return 'tech';
-  if (/music|fest|cultural|open mic|drama|theatre/.test(t))  return 'music';
-  if (/tournament|sports|badminton|chess|championship|game/.test(t)) return 'sports';
-  return 'seminar';
-}
-
-// ── Event templates ──────────────────────────────────────────────────────────
-const TEMPLATES = [
-  { title: 'National Hackathon 2025',         description: 'A 24-hour coding hackathon open to all students.',          venue: 'Innovation Lab',      time: '9:00 AM'  },
-  { title: 'Web Dev Workshop',                description: 'Hands-on workshop covering React and Node.js basics.',       venue: 'CS Seminar Hall',     time: '10:00 AM' },
-  { title: 'Inter-College Tournament',        description: 'Sports tournament featuring football and basketball.',       venue: 'Sports Complex',      time: '8:00 AM'  },
-  { title: 'AI/ML Seminar',                   description: 'Expert talk on the latest trends in AI and machine learning.', venue: 'Auditorium A',     time: '11:00 AM' },
-  { title: 'Coding Contest — Round 1',        description: 'Competitive programming contest with cash prizes.',          venue: 'Computer Lab 3',     time: '2:00 PM'  },
-  { title: 'Annual Music Fest',               description: 'Live performances by student bands and solo artists.',       venue: 'Open Air Theatre',   time: '5:00 PM'  },
-  { title: 'Debate Competition',              description: 'Parliamentary-style debate on current affairs.',             venue: 'Seminar Room B',     time: '3:00 PM'  },
-  { title: 'Cloud Computing Workshop',        description: 'Introduction to AWS and Azure for beginners.',               venue: 'CS Seminar Hall',     time: '10:30 AM' },
-  { title: 'Startup Pitch Day',               description: 'Students pitch their startup ideas to a panel of judges.',   venue: 'Conference Hall',    time: '1:00 PM'  },
-  { title: 'Photography Contest',             description: 'Submit your best campus shots and win prizes.',              venue: 'Art Gallery',        time: '9:00 AM'  },
-  { title: 'Cybersecurity Bootcamp',          description: 'Learn ethical hacking and network security fundamentals.',   venue: 'Lab Block 2',        time: '9:30 AM'  },
-  { title: 'Cultural Night',                  description: 'A celebration of diverse cultures through dance and music.', venue: 'Main Auditorium',    time: '6:00 PM'  },
-  { title: 'Data Science Seminar',            description: 'Deep dive into data analysis and visualization tools.',      venue: 'Auditorium B',       time: '11:30 AM' },
-  { title: 'Open Mic Night',                  description: 'Share your poetry, comedy, or music with the campus.',       venue: 'Student Lounge',     time: '7:00 PM'  },
-  { title: 'Resume Building Workshop',        description: 'Tips and tricks to craft an industry-ready resume.',         venue: 'Placement Cell',     time: '2:30 PM'  },
-  { title: 'Robotics Challenge',              description: 'Build and race autonomous robots in a timed challenge.',     venue: 'Robotics Lab',       time: '10:00 AM' },
-  { title: 'Inter-Dept Quiz Competition',     description: 'General knowledge and technical quiz for all departments.',  venue: 'Seminar Hall C',     time: '3:30 PM'  },
-  { title: 'Flutter App Dev Workshop',        description: 'Build your first cross-platform mobile app with Flutter.',   venue: 'CS Lab 1',           time: '10:00 AM' },
-  { title: 'Entrepreneurship Summit',         description: 'Panel discussion with successful alumni entrepreneurs.',     venue: 'Conference Hall',    time: '12:00 PM' },
-  { title: 'Chess Tournament',                description: 'Individual and team chess competition for all skill levels.', venue: 'Recreation Room',   time: '9:00 AM'  },
-  { title: 'Blockchain Workshop',             description: 'Introduction to blockchain technology and smart contracts.',  venue: 'CS Seminar Hall',    time: '11:00 AM' },
-  { title: 'Drama & Theatre Fest',            description: 'Annual theatre festival featuring original student plays.',   venue: 'Main Auditorium',   time: '5:30 PM'  },
-  { title: 'Linux & Open Source Day',         description: 'Explore the world of open-source software and Linux.',       venue: 'Lab Block 1',        time: '10:00 AM' },
-  { title: 'Career Guidance Seminar',         description: 'Industry experts share insights on career paths and growth.', venue: 'Auditorium A',     time: '2:00 PM'  },
-  { title: 'Badminton Championship',          description: 'Singles and doubles badminton tournament for students.',      venue: 'Indoor Stadium',    time: '8:30 AM'  },
-  { title: 'UI/UX Design Workshop',           description: 'Learn Figma and design principles for modern interfaces.',   venue: 'Design Studio',      time: '11:00 AM' },
-  { title: 'Science Exhibition',             description: 'Students showcase innovative science projects and models.',   venue: 'Exhibition Hall',    time: '10:00 AM' },
-  { title: 'Mock Interview Drive',            description: 'Practice technical and HR interviews with industry mentors.', venue: 'Placement Cell',    time: '9:00 AM'  },
-  { title: 'Environment Awareness Walk',      description: 'Campus walk to promote sustainability and green practices.',  venue: 'Campus Ground',     time: '7:00 AM'  },
-  { title: 'Annual Sports Day',               description: 'Track and field events, relay races, and team sports.',      venue: 'Sports Complex',     time: '8:00 AM'  },
+  // General/Placement related
+  { 
+    clubRef: 'General', 
+    title: 'Career Guidance Seminar', 
+    description: 'Industry experts share insights on career paths and growth.', 
+    venue: 'Auditorium A', 
+    time: '2:00 PM',
+    image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'General', 
+    title: 'Resume Building Workshop', 
+    description: 'Tips and tricks to craft an industry-ready resume.', 
+    venue: 'Placement Cell', 
+    time: '2:30 PM',
+    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&h=400&fit=crop'
+  },
+  { 
+    clubRef: 'General', 
+    title: 'Mock Interview Drive', 
+    description: 'Practice technical and HR interviews with industry mentors.', 
+    venue: 'Placement Cell', 
+    time: '9:00 AM',
+    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&h=400&fit=crop'
+  },
 ];
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
 const futureDate = (daysFromNow) => {
   const d = new Date();
@@ -107,27 +312,49 @@ const futureDate = (daysFromNow) => {
   return d;
 };
 
-// ── Main ─────────────────────────────────────────────────────────────────────
 async function seed() {
-  await mongoose.connect(process.env.MONGO_URI);
-  await Event.deleteMany({});
-  console.log('Cleared existing events');
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('✅ Connected to MongoDB');
 
-  const events = TEMPLATES.map((t, i) => ({
-    title:         t.title,
-    description:   t.description,
-    date:          futureDate(i + 1),
-    time:          t.time,
-    venue:         t.venue,
-    club:          rand(CLUB_IDS),
-    createdBy:     CREATED_BY,
-    registrations: [],
-    image:         pickImage(detectCategory(t.title)),
-  }));
+    await Event.deleteMany({});
+    console.log('🗑️  Cleared existing events');
 
-  await Event.insertMany(events);
-  console.log('30 events inserted');
-  process.exit(0);
+    const clubsInDb = await Club.find({});
+    
+    let creator = await User.findOne({ role: 'admin' }) || await User.findOne({ role: 'club' }) || await User.findOne({});
+    if (!creator) throw new Error("No users found to set as event creator");
+
+    const eventsToInsert = [];
+    
+    EVENT_TEMPLATES.forEach((t, i) => {
+      let matchingClub = null;
+      if (t.clubRef !== 'General') {
+        matchingClub = clubsInDb.find(c => c.name.toLowerCase().includes(t.clubRef.toLowerCase()));
+      }
+      const clubId = matchingClub ? matchingClub._id : (clubsInDb.length > 0 ? clubsInDb[Math.floor(Math.random() * clubsInDb.length)]._id : null);
+
+      eventsToInsert.push({
+        title:         t.title,
+        description:   t.description,
+        date:          futureDate(i + 1),
+        time:          t.time,
+        venue:         t.venue,
+        club:          clubId,
+        createdBy:     creator._id,
+        registrations: [],
+        image:         t.image
+      });
+    });
+
+    await Event.insertMany(eventsToInsert);
+    console.log(`✅ Successfully seeded ${eventsToInsert.length} events with 100% UNIQUE images!`);
+
+    process.exit(0);
+  } catch (err) {
+    console.error('❌ Error:', err.message);
+    process.exit(1);
+  }
 }
 
-seed().catch((err) => { console.error(err); process.exit(1); });
+seed();
