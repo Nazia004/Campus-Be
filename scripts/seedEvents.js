@@ -4,55 +4,39 @@ const Event = require('../models/Event');
 const Club = require('../models/Club');
 const User = require('../models/User');
 
-// ── Image pools (category-based, no repeats within a pool) ─────────────────
-const IMAGES = {
-  tech: [
-    'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800',
-    'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800',
-    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800',
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800',
-    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800',
-  ],
-  music: [
-    'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800',
-    'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800',
-    'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800',
-    'https://images.unsplash.com/photo-1501612780327-45045538702b?w=800',
-    'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=800',
-  ],
-  sports: [
-    'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800',
-    'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800',
-    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
-    'https://images.unsplash.com/photo-1543351611-58f69d7c1781?w=800',
-    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800',
-  ],
-  seminar: [
-    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800',
-    'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800',
-    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800',
-    'https://images.unsplash.com/photo-1560439514-4e9645039924?w=800',
-    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800',
-  ],
+const EVENT_IMAGE_MAP = {
+  // Technical
+  'Coding Club': 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=400&fit=crop',
+  'Cyber Security Club': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=400&fit=crop',
+  'Google Developer Groups': 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=800&h=400&fit=crop',
+  'Sir C.V. Raman Science Club': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&h=400&fit=crop',
+
+  // Cultural
+  'Anubhuti Dramatic Club': 'https://images.unsplash.com/photo-1460723237483-7a6dc9d0b212?w=800&h=400&fit=crop',
+  'Art Club': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&h=400&fit=crop',
+  'Music/Band Club': 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&h=400&fit=crop',
+  'Atithya Club': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=400&fit=crop',
+
+  // Academic & Professional
+  'Agriverse': 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop',
+  'Marketing Club': 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&h=400&fit=crop',
+
+  // Sports
+  'Badminton Club': 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=800&h=400&fit=crop',
+  'Basketball Club': 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=400&fit=crop',
+  'Football Club': 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=800&h=400&fit=crop',
+  'Volleyball Club': 'https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=800&h=400&fit=crop',
+  'Cricket Club': 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=800&h=400&fit=crop',
+  'Athletics Club': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=400&fit=crop',
+  'Table Tennis Club': 'https://images.unsplash.com/photo-1609710228159-0fa9bd7c0827?w=800&h=400&fit=crop',
+
+  // Social & Environmental
+  'NSS': 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&h=400&fit=crop',
+  'Net Zero Club': 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&h=400&fit=crop',
+  
+  // General fallback
+  'General': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop'
 };
-
-const lastUsed = { tech: -1, music: -1, sports: -1, seminar: -1 };
-
-function pickImage(category) {
-  const pool = IMAGES[category];
-  let idx;
-  do { idx = Math.floor(Math.random() * pool.length); } while (idx === lastUsed[category] && pool.length > 1);
-  lastUsed[category] = idx;
-  return pool[idx];
-}
-
-function detectCategory(title) {
-  const t = title.toLowerCase();
-  if (/hackathon|coding|code|tech|web|app|cloud|cyber|blockchain|linux|robot|flutter|data|ai|ml|ui|ux|science/.test(t)) return 'tech';
-  if (/music|fest|cultural|open mic|drama|theatre|art/.test(t))  return 'music';
-  if (/tournament|sports|badminton|basketball|football|volleyball|cricket|athletics|table tennis|chess|championship|game|league/.test(t)) return 'sports';
-  return 'seminar';
-}
 
 const EVENT_TEMPLATES = [
   // Tech Clubs (Coding Club, GDG, Cyber Security, Science)
@@ -146,7 +130,7 @@ async function seed() {
         club:          clubId,
         createdBy:     creator._id,
         registrations: [],
-        image:         pickImage(detectCategory(t.title)),
+        image:         EVENT_IMAGE_MAP[t.clubRef] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop',
       });
     });
 
