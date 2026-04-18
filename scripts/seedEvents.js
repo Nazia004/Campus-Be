@@ -57,11 +57,11 @@ function detectCategory(title) {
 const EVENT_TEMPLATES = [
   // Tech Clubs (Coding Club, GDG, Cyber Security, Science)
   { clubRef: 'Coding Club', title: 'National Hackathon 2025', description: 'A 24-hour coding hackathon open to all students.', venue: 'Innovation Lab', time: '9:00 AM' },
-  { clubRef: 'GDG', title: 'Web Dev Workshop', description: 'Hands-on workshop covering React and Node.js basics.', venue: 'CS Seminar Hall', time: '10:00 AM' },
+  { clubRef: 'Google Developer Groups', title: 'Web Dev Workshop', description: 'Hands-on workshop covering React and Node.js basics.', venue: 'CS Seminar Hall', time: '10:00 AM' },
   { clubRef: 'Cyber Security Club', title: 'Cybersecurity Bootcamp', description: 'Learn ethical hacking and network security fundamentals.', venue: 'Lab Block 2', time: '9:30 AM' },
   { clubRef: 'Coding Club', title: 'Coding Contest — Round 1', description: 'Competitive programming contest with cash prizes.', venue: 'Computer Lab 3', time: '2:00 PM' },
-  { clubRef: 'GDG', title: 'Flutter App Dev Workshop', description: 'Build your first cross-platform mobile app with Flutter.', venue: 'CS Lab 1', time: '10:00 AM' },
-  { clubRef: 'GDG', title: 'Cloud Computing Workshop', description: 'Introduction to AWS and Azure for beginners.', venue: 'CS Seminar Hall', time: '10:30 AM' },
+  { clubRef: 'Google Developer Groups', title: 'Flutter App Dev Workshop', description: 'Build your first cross-platform mobile app with Flutter.', venue: 'CS Lab 1', time: '10:00 AM' },
+  { clubRef: 'Google Developer Groups', title: 'Cloud Computing Workshop', description: 'Introduction to AWS and Azure for beginners.', venue: 'CS Seminar Hall', time: '10:30 AM' },
   { clubRef: 'Coding Club', title: 'Data Science Seminar', description: 'Deep dive into data analysis and visualization tools.', venue: 'Auditorium B', time: '11:30 AM' },
   { clubRef: 'Cyber Security Club', title: 'Blockchain Workshop', description: 'Introduction to blockchain technology and smart contracts.', venue: 'CS Seminar Hall', time: '11:00 AM' },
   { clubRef: 'Sir C.V. Raman Science Club', title: 'Science Exhibition', description: 'Students showcase innovative science projects and models.', venue: 'Exhibition Hall', time: '10:00 AM' },

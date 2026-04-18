@@ -13,7 +13,7 @@ const CLUBS = [
   // Technical Clubs
   { name: 'Coding Club', category: 'Technical', description: 'A community for coding enthusiasts to practice competitive programming, build projects, and participate in hackathons.' },
   { name: 'Cyber Security Club', category: 'Technical', description: 'Explores cybersecurity concepts, ethical hacking, CTF challenges, and digital safety awareness.' },
-  { name: 'Google Developer Groups (GDG on Campus)', category: 'Technical', description: 'A Google-supported developer community focusing on Google technologies, workshops, and developer events.' },
+  { name: 'Google Developer Groups', category: 'Technical', description: 'A Google-supported developer community focusing on Google technologies, workshops, and developer events.' },
   { name: 'Sir C.V. Raman Science Club', category: 'Technical', description: 'Promotes scientific temper through experiments, science exhibitions, guest lectures, and research discussions.' },
 
   // Cultural Clubs
