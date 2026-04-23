@@ -6,13 +6,22 @@ const mongoose = require('mongoose');
 const app = express();
 
 const allowedOrigins = [
-  /^http:\/\/localhost:\d+$/,
-  'https://campuszone.co.in',
+  'http://localhost:3000',
+  'https://campusync.co.in',
+  'https://www.campusync.co.in'
 ];
+
 app.use(cors({
-  origin: (origin, cb) => (!origin || allowedOrigins.some(o => typeof o === 'string' ? o === origin : o.test(origin)) ? cb(null, true) : cb(new Error('CORS'))),
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 app.use(express.json());
 
