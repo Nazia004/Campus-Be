@@ -8,13 +8,13 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const users = [
   {
     name: 'System Admin',
-    email: 'admin@campuszone.co.in',
+    email: 'admin@campusync.co.in',
     password: 'Admin@2025',
     role: 'admin'
   },
   {
     name: 'Student User',
-    email: 'student@campuszone.co.in',
+    email: 'student@campusync.co.in',
     password: 'Student@2025',
     role: 'student',
     rollNumber: 'CS2025001',
@@ -23,19 +23,19 @@ const users = [
   },
   {
     name: 'Club Coordinator',
-    email: 'club@campuszone.co.in',
+    email: 'club@campusync.co.in',
     password: 'Club@2025',
     role: 'club'
   },
   {
     name: 'Placement Officer',
-    email: 'placement@campuszone.co.in',
+    email: 'placement@campusync.co.in',
     password: 'Placement@2025',
     role: 'placement'
   },
   {
     name: 'Sample Faculty',
-    email: 'faculty@campuszone.co.in',
+    email: 'faculty@campusync.co.in',
     password: 'Faculty@2025',
     role: 'faculty'
   }
