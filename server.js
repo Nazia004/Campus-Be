@@ -37,19 +37,10 @@ app.use((err, req, res, next) => {
 });
 app.get('/', (req, res) => res.send('Campus Hub API is running'));
 
-async function seedAdmin() {
-  const User = require('./models/User');
-  const exists = await User.findOne({ email: 'admin@admin.com' });
-  if (!exists) {
-    await User.create({ name: 'Admin', email: 'admin@admin.com', password: 'admin@123', role: 'admin' });
-    console.log('Admin seeded: admin@admin.com / admin@123');
-  }
-}
 
 mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('MongoDB connected');
-    await seedAdmin();
     app.listen(process.env.PORT || 5000, () =>
       console.log(`Server running on port ${process.env.PORT || 5000}`)
     );
