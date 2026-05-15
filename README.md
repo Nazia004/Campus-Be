@@ -85,7 +85,7 @@ backend/
 
 ## 🤝 Contributing
 
-Please feel free to submit issues or pull requests to improve the API.
+This project was collaboratively developed as a full-stack academic and portfolio project focused on scalable campus management solutions.
 
 ---
 
