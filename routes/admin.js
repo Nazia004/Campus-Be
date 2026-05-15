@@ -168,4 +168,30 @@ router.delete('/placements/:id', adminOnly, async (req, res) => {
   }
 });
 
+// ── STATS ─────────────────────────────────────────────────────────────────────
+
+router.get('/stats', adminOnly, async (req, res) => {
+  try {
+    const [students, clubs, faculty, placements] = await Promise.all([
+      User.countDocuments({ role: 'student' }),
+      require('../models/Club').countDocuments(),
+      User.countDocuments({ role: 'faculty' }),
+      require('../models/Placement').countDocuments()
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        students,
+        clubs,
+        faculty,
+        placements
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
+

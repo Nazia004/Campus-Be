@@ -37,7 +37,8 @@ const users = [
     name: 'Sample Faculty',
     email: 'faculty@campusync.co.in',
     password: 'Faculty@2025',
-    role: 'faculty'
+    role: 'faculty',
+    department: 'Computer Science'
   }
 ];
 
